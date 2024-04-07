@@ -7,6 +7,7 @@ import '../utils/notification_manager.dart';
 import 'package:intl/intl.dart';
 import 'resource_page.dart';
 import 'mindfulness_page.dart';
+import 'thought_challenge_page.dart';
 
 class NotificationCard extends StatelessWidget {
   final NotificationItem notification;
@@ -389,7 +390,13 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     // Placeholder navigation functions
     void navigateToMoodTracker() => {};
-    void navigateToThoughtChallenge() => {};
+    void navigateToThoughtChallenge() {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const ThoughtChallengeScreen()),
+      );
+    }
+    
     void navigateToBehavioralActivation() {
       Navigator.push(
         context,

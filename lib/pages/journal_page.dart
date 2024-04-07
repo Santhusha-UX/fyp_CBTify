@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:lottie/lottie.dart';
 import 'dart:convert';
 import '../models/journal_entry.dart';
 import 'add_entry_page.dart';
@@ -37,35 +38,54 @@ class _JournalPageState extends State<JournalPage> {
   }
 
   void _navigateToAddEntry(BuildContext context) async {
-    final result = await Navigator.push(
+    await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const AddEntryScreen()),
+      MaterialPageRoute(builder: (context) => AddEntryScreen(onSave: _loadEntries)),
     );
-
-    if (result == 'update') {
-      _loadEntries();
-    }
   }
 
   void _navigateToEditEntry(BuildContext context, JournalEntry entry) async {
-    final result = await Navigator.push(
+    await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => AddEntryScreen(entry: entry)),
+      MaterialPageRoute(builder: (context) => AddEntryScreen(entry: entry, onSave: _loadEntries)),
     );
-
-    if (result == 'update') {
-      _loadEntries();
-    }
   }
 
   void _deleteEntry(String id) async {
-    try {
-      await storage.delete(key: id);
-      _loadEntries(); // Refresh the entries list
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Entry deleted successfully")));
-    } catch (e) {
-      _showError('Failed to delete entry.');
+    final bool confirmDelete = await _showDeleteConfirmationDialog();
+
+    if (confirmDelete) {
+      try {
+        await storage.delete(key: id);
+        _loadEntries(); // Refresh the entries list
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Entry deleted successfully")));
+      } catch (e) {
+        _showError('Failed to delete entry.');
+      }
     }
+  }
+
+  Future<bool> _showDeleteConfirmationDialog() async {
+    return (await showDialog(
+          context: context,
+          builder: (BuildContext context) => AlertDialog(
+            title: const Text('Confirm Deletion'),
+            content: const Text(
+                'Are you sure you want to delete this journal entry? This action cannot be undone.'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: const Text('Delete', style: TextStyle(color: Colors.red)),
+              ),
+            ],
+          ),
+        )) ??
+        false; // Return false if dialog is dismissed
   }
 
   void _showError(String message) {
@@ -74,48 +94,130 @@ class _JournalPageState extends State<JournalPage> {
 
   @override
   Widget build(BuildContext context) {
-  return Scaffold(
-    appBar: AppBar(
-      title: const Text('My Journal'),
-      backgroundColor: Colors.deepPurple, 
-      shadowColor: Colors.white54,
-      actions: [
-        IconButton(
-          icon: const Icon(Icons.refresh),
-          onPressed: _loadEntries,
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('My Journal'),
+        backgroundColor: Colors.deepPurple,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: _loadEntries,
+          ),
+        ],
+      ),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: 80),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start, 
+              children: [
+                _buildMotivationalBanner(),
+                const Padding(
+                  padding: EdgeInsets.fromLTRB(20, 20, 20, 10), 
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start, 
+                    children: [
+                      Text(
+                        "Journal Entries",
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                        textAlign: TextAlign.left,
+                      ),
+                      SizedBox(height: 8), 
+                      Text(
+                        "Capture your thoughts and moments. Reflect, learn, and grow with each entry.",
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.white38, 
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                entries.isEmpty ? _buildEmptyState() : _buildEntriesList(),
+              ],
+            ),
+          ),
         ),
-      ],
-    ),
-      body: entries.isEmpty ? _buildEmptyState() : RefreshIndicator(
-        onRefresh: _loadEntries,
-        child: _buildEntriesList(),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _navigateToAddEntry(context),
         backgroundColor: Colors.deepPurple,
-        tooltip: 'Add Journal Entry', // Match the AppBar
+        tooltip: 'Add Journal Entry',
         child: const Icon(Icons.add),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+    );
+  }
+
+  Widget _buildMotivationalBanner() {
+    return Container(
+      margin: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16), 
+      decoration: BoxDecoration(
+        color: Colors.deepPurpleAccent,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.deepPurple.shade200.withOpacity(0.6),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min, 
+        children: [
+          Lottie.asset(
+            'assets/animations/writing.json', 
+            width: MediaQuery.of(context).size.width * 0.75, 
+            fit: BoxFit.cover, 
+          ),
+          const Text(
+            "Journal Your Journey",
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 12), 
+          Text(
+            "Explore, progress, and grow with every journal entry. Discover your path to well-being.",
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.white.withOpacity(0.9),
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildEmptyState() {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.book, size: 48.0, color: Colors.grey[500]),
+            const SizedBox(height: 80),
+            Icon(Icons.book, size: 48.0, color: Colors.grey.shade500),
             const SizedBox(height: 20),
             Text(
               "Your journal is empty",
-              style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold, color: Colors.grey[500]),
+              style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold, color: Colors.grey.shade500),
             ),
             const SizedBox(height: 10),
             Text(
               "Tap the + button to add your first memory.",
-              style: TextStyle(fontSize: 12.0, color: Colors.grey[400]),
+              style: TextStyle(fontSize: 14.0, color: Colors.grey.shade400),
               textAlign: TextAlign.center,
             ),
           ],
@@ -126,14 +228,15 @@ class _JournalPageState extends State<JournalPage> {
 
   Widget _buildEntriesList() {
     return ListView.builder(
+      physics: const NeverScrollableScrollPhysics(),
+      shrinkWrap: true,
       itemCount: entries.length,
       itemBuilder: (context, index) {
         final entry = entries[index];
         final entryDate = entry.date.toLocal();
         return Card(
-          color: Colors.black12,
-          margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
-          elevation: 2.0,
+          elevation: 4,
+          margin: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 16.0),
           child: ListTile(
             leading: const CircleAvatar(
               backgroundColor: Colors.deepPurple,
@@ -144,14 +247,19 @@ class _JournalPageState extends State<JournalPage> {
               style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
             ),
             subtitle: Text(
-              '${entryDate.year}-${entryDate.month.toString().padLeft(2,'0')}-${entryDate.day.toString().padLeft(2,'0')} | ${entry.type}',
+              '${entryDate.year}-${entryDate.month.toString().padLeft(2, '0')}-${entryDate.day.toString().padLeft(2, '0')} | ${entry.type}',
               style: TextStyle(color: Colors.grey[400]),
             ),
             onTap: () => _navigateToEditEntry(context, entry),
-            trailing: IconButton(
-              icon: Icon(Icons.delete_outline, color: Colors.red[300]),
-              onPressed: () => _deleteEntry(entry.id),
+            trailing: Container(
+              width: MediaQuery.of(context).size.width * 0.1, // Adjust width as needed
+              alignment: Alignment.centerRight,
+              child: IconButton(
+                icon: const Icon(Icons.delete_rounded, color: Colors.red),
+                onPressed: () => _deleteEntry(entry.id),
+              ),
             ),
+            onLongPress: () => _deleteEntry(entry.id),
           ),
         );
       },

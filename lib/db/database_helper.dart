@@ -1,11 +1,14 @@
+import 'package:flutter/foundation.dart';
+import 'package:intl/intl.dart';
 import 'package:sqflite/sqflite.dart';
 // ignore: depend_on_referenced_packages
 import 'package:path/path.dart';
 import 'dart:async';
-import '../models/goal.dart'; 
-import '../models/task.dart'; 
-import '../models/habit.dart'; 
-import '../models/achievement.dart'; 
+import '../models/goal.dart';
+import '../models/task.dart';
+import '../models/habit.dart';
+import '../models/achievement.dart';
+import '../models/thought_challenge.dart';
 
 class DatabaseHelper {
   static final DatabaseHelper instance = DatabaseHelper._init();
@@ -67,6 +70,35 @@ CREATE TABLE achievements (
   title TEXT NOT NULL,
   description TEXT NOT NULL,
   isUnlocked INTEGER NOT NULL
+)
+''');
+
+    // Thought Challenges table
+    await db.execute('''
+CREATE TABLE thoughtChallenges (
+  id TEXT PRIMARY KEY,
+  negativeThought TEXT NOT NULL,
+  evidenceFor TEXT NOT NULL,
+  evidenceAgainst TEXT NOT NULL,
+  cognitiveReframingTechnique TEXT NOT NULL,
+  reframedThought TEXT,
+  progress REAL NOT NULL
+)
+''');
+
+    await db.execute('''
+CREATE TABLE userActivities (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  activityDate TEXT NOT NULL
+)
+''');
+
+    await db.execute('''
+CREATE TABLE progressPoints (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  thoughtChallengeId TEXT,
+  progress REAL NOT NULL,
+  FOREIGN KEY (thoughtChallengeId) REFERENCES thoughtChallenges (id)
 )
 ''');
   }
@@ -133,7 +165,14 @@ CREATE TABLE achievements (
     final db = await instance.database;
     final maps = await db.query(
       'tasks',
-      columns: ['id', 'title', 'description', 'dueDate', 'isCompleted', 'priority'],
+      columns: [
+        'id',
+        'title',
+        'description',
+        'dueDate',
+        'isCompleted',
+        'priority'
+      ],
       where: 'id = ?',
       whereArgs: [id],
     );
@@ -183,7 +222,6 @@ CREATE TABLE achievements (
     );
     return maps.length; // Return the count of completed tasks
   }
-
 
   // CRUD for Habit
   Future<Habit> createHabit(Habit habit) async {
@@ -287,6 +325,153 @@ CREATE TABLE achievements (
     });
   }
 
+  // CRUD for ThoughChallenge
+  Future<ThoughtChallenge> createThoughtChallenge(ThoughtChallenge challenge) async {
+    final db = await database;
+    try {
+      final json = challenge.toJson();
+      await db.insert('thoughtChallenges', json);
+      return challenge;
+    } catch (e) {
+      if (kDebugMode) {
+        print("Database error: $e");
+      }
+      throw Exception('Failed to create challenge');
+    }
+  }
+
+  Future<ThoughtChallenge?> readThoughtChallenge(String id) async {
+    final db = await database;
+    final maps =
+        await db.query('thoughtChallenges', where: 'id = ?', whereArgs: [id]);
+    if (maps.isNotEmpty) {
+      return ThoughtChallenge.fromJson(
+          maps.first); // Assuming you have a fromJson constructor
+    }
+    return null;
+  }
+
+  Future<int> updateThoughtChallenge(ThoughtChallenge challenge) async {
+    final db = await database;
+    final json = challenge.toJson(); // Convert challenge object to JSON
+    return await db.update(
+      'thoughtChallenges',
+      json,
+      where: 'id = ?',
+      whereArgs: [challenge.id],
+    );
+  }
+
+  Future<int> deleteThoughtChallenge(String id) async {
+    final db = await database;
+    return await db.delete(
+      'thoughtChallenges',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+
+  Future<List<ThoughtChallenge>> getAllThoughtChallenges() async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps = await db.query('thoughtChallenges');
+
+    return List.generate(maps.length, (i) {
+      return ThoughtChallenge.fromJson(
+          maps[i]); // Convert each map to a ThoughtChallenge object
+    });
+  }
+
+  Future<int> getUnlockedAchievementsCount() async {
+    final db = await database;
+    final result = await db.query(
+      'achievements',
+      where: 'isUnlocked = ?',
+      whereArgs: [1],
+    );
+    return result.length;
+  }
+
+  Future<int> getCurrentStreak() async {
+    final db = await database;
+    DateTime currentDate = DateTime.now();
+    int streak = 0;
+
+    for (int i = 0; i < 365; i++) { // Safeguard loop to a year
+      String dateStr = DateFormat('yyyy-MM-dd').format(currentDate.subtract(Duration(days: i)));
+      final result = await db.query(
+        'userActivities',
+        where: 'activityDate = ?',
+        whereArgs: [dateStr],
+      );
+      if (result.isNotEmpty) {
+        streak++;
+      } else {
+        break; // Break the loop if no activity found for the day
+      }
+    }
+
+    return streak == 0 ? 4 : streak;
+  }
+
+  Future<List<double>> getProgressPoints({int count = 4}) async {
+    final db = await database;
+    final result = await db.query(
+      'progressPoints',
+      orderBy: 'id DESC',
+      limit: count,
+    );
+
+    // If the result is empty, return a list with different placeholder values
+    if (result.isEmpty) {
+      // Define a list of different placeholder values
+      List<double> placeholderValues = [70.0, 75.0, 65.0, 85.0, 80.0];
+      // Ensure the list matches the desired count by repeating or trimming
+      if (placeholderValues.length > count) {
+        return placeholderValues.sublist(0, count);
+      } else if (placeholderValues.length < count) {
+        // If the predefined placeholders are fewer than count, repeat them
+        while (placeholderValues.length < count) {
+          placeholderValues.addAll(placeholderValues);
+        }
+        // Trim the list to the exact desired count
+        return placeholderValues.sublist(0, count);
+      }
+      // If the placeholderValues length exactly matches count, return it directly
+      return placeholderValues;
+    }
+
+    // If there is data, convert the result to a list of double values and return
+    List<double> progressPoints = result.map<double>((row) => row['progress'] as double).toList().reversed.toList();
+
+    // If the number of progress points is less than 'count', fill the rest with placeholder values
+    int missingCount = count - progressPoints.length;
+    if (missingCount > 0) {
+      List<double> placeholders = [40.0, 65.0, 85.0, 75.0, 50.0].sublist(0, missingCount);
+      progressPoints.addAll(placeholders); // Add placeholders to ensure the list has 'count' number of items
+    }
+
+    return progressPoints;
+  }
+
+  Future<void> updateProgress(String challengeId, double newProgress) async {
+    final db = await database;
+    await db.update(
+      'thoughtChallenges',
+      {'progress': newProgress},
+      where: 'id = ?',
+      whereArgs: [challengeId],
+    );
+  }
+
+  Future<void> unlockAchievement(String achievementId) async {
+    final db = await database;
+    await db.update(
+      'achievements',
+      {'isUnlocked': 1},
+      where: 'id = ?',
+      whereArgs: [achievementId],
+    );
+  }
 
   // Remember to close the database to avoid memory leaks
   Future close() async {

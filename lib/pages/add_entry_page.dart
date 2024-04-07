@@ -7,8 +7,9 @@ import '../models/journal_entry.dart';
 
 class AddEntryScreen extends StatefulWidget {
   final JournalEntry? entry;
+  final Function onSave;
 
-  const AddEntryScreen({super.key, this.entry});
+  const AddEntryScreen({super.key, this.entry, required this.onSave});
 
   @override
   _AddEntryScreenState createState() => _AddEntryScreenState();
@@ -51,6 +52,7 @@ class _AddEntryScreenState extends State<AddEntryScreen> with SingleTickerProvid
       try {
         final entryJson = json.encode(entry.toJson());
         await storage.write(key: entry.id, value: entryJson);
+        widget.onSave();
         Navigator.of(context).pop(true);
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Entry saved successfully!')));
       } catch (e) {

@@ -1,7 +1,7 @@
 // ignore_for_file: library_private_types_in_public_api, deprecated_member_use
 
 import 'package:flutter/material.dart';
-import 'challenge_page.dart';
+import 'cbt_challenge.dart';
 import 'home_page.dart';
 import 'journal_page.dart';
 import 'profile_page.dart';
