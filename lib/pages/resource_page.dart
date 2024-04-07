@@ -71,7 +71,7 @@ class ResourcesScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Educational Resources"),
+        title: const Text("Learn & Grow"),
         backgroundColor: Colors.deepPurple,
         shadowColor: Colors.white54,
       ),

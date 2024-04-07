@@ -87,7 +87,7 @@ class _MindfulnessScreenState extends State<MindfulnessScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Mindfulness and Relaxation"),
+        title: const Text("Calm Your Mind"),
         backgroundColor: Colors.deepPurple,
         shadowColor: Colors.white54,
         elevation: 0,

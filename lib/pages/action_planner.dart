@@ -198,7 +198,7 @@ class _ActionPlannerState extends State<ActionPlanner> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Your Wellness Journey",
+        title: const Text("Action Planner",
             style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.deepPurpleAccent,
         shadowColor: Colors.white54,
