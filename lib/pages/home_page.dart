@@ -176,7 +176,7 @@ class NotificationIcon extends StatelessWidget {
       BuildContext context, NotificationManager notificationManager) {
     showDialog(
       context: context,
-      barrierDismissible: false,
+      barrierDismissible: true,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
           title: const Text('Notifications'),
