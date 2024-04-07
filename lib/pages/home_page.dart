@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import '../utils/notification_manager.dart';
 import 'package:intl/intl.dart';
+import 'mood_tracker_page.dart';
 import 'resource_page.dart';
 import 'mindfulness_page.dart';
 import 'thought_challenge_page.dart';
@@ -389,7 +390,13 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     // Placeholder navigation functions
-    void navigateToMoodTracker() => {};
+    void navigateToMoodTracker() {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const MoodTrackerScreen()),
+      );
+    }
+
     void navigateToThoughtChallenge() {
       Navigator.push(
         context,

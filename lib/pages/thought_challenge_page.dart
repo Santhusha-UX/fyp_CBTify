@@ -855,7 +855,7 @@ class _ProgressDashboardState extends State<ProgressDashboard> {
                 isCurved: true,
                 color: Colors.deepPurple,
                 barWidth: 3,
-                dotData: const FlDotData(show: false),
+                dotData: const FlDotData(show: true),
                 belowBarData: BarAreaData(
                     show: true, color: Colors.deepPurple.withOpacity(0.1)),
               ),
