@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:overlay_support/overlay_support.dart';
+import 'pages/chat.dart';
 import 'pages/relaxation_page.dart';
 import 'utils/notification_manager.dart';
 
@@ -52,7 +53,11 @@ class MainApp extends StatelessWidget {
               textTheme: ButtonTextTheme.primary,
             ),
           ),
-          home: RelaxationScreen(),
+          initialRoute: RelaxationScreen.routeName,
+          routes: {
+            RelaxationScreen.routeName: (context) => const RelaxationScreen(),
+            ChatPage.routeName: (context) => const ChatPage(),
+          },
         ),
       )
     );

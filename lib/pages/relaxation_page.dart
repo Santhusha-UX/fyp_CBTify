@@ -8,6 +8,7 @@ import 'main_page.dart';
 
 // Screen for guiding users through relaxation exercises.
 class RelaxationScreen extends StatefulWidget {
+  static const routeName  = '/relaxation_page';
   const RelaxationScreen({super.key});
 
   @override

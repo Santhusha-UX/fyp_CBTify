@@ -6,6 +6,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'dart:convert';
 
+import 'chatbot.dart';
+
 class Mood {
   final String name;
   final String lottieAsset;
@@ -66,42 +68,6 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
     }
   }
 
-  Widget _buildMoodTrackerBanner(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(top: 8, bottom: 12),
-      padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-      decoration: BoxDecoration(
-        color: Colors.deepPurpleAccent,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.deepPurple.shade200.withOpacity(0.6),
-            blurRadius: 5,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Lottie.asset('assets/animations/mood_banner.json', repeat: true),
-          const Text(
-            "Navigate Your Emotional Journey",
-            style: TextStyle(
-                fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 12),
-          Text(
-            "Track your emotional patterns and uncover insights for a balanced mind with mindfulness at your pace.",
-            style:
-                TextStyle(fontSize: 16, color: Colors.white.withOpacity(0.9)),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -115,7 +81,7 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildMoodTrackerBanner(context),
+              const ChatBot(),
               Card(
                 margin: const EdgeInsets.only(top: 16),
                 shape: RoundedRectangleBorder(
