@@ -117,7 +117,7 @@ class _ChatPageState extends State<ChatPage> {
                             ),
                         ),
                         color: Colors.grey.shade800,
-                        borderRadius: BorderRadius.all(Radius.circular(50.0)),
+                        borderRadius: const BorderRadius.all(Radius.circular(50.0)),
                       ),
                       child: Padding(
                         padding: const EdgeInsets.all(4.0),

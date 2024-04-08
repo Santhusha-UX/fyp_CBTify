@@ -96,7 +96,7 @@ class _JournalPageState extends State<JournalPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Journal'),
+        title: const Text('CBTify Journal'),
         backgroundColor: Colors.deepPurple,
         actions: [
           IconButton(
