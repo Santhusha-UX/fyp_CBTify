@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import '../games/mood_match.dart';
-import '../games/thought_reframe.dart'; // Make sure this path is correct
+import '../games/thought_reframe.dart';
+import '../games/word_web.dart';
 
 class ChallengePage extends StatelessWidget {
   const ChallengePage({super.key});
@@ -44,7 +45,7 @@ class ChallengePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('CBT Game Hub'),
+        title: const Text('CBTify Game Hub'),
         centerTitle: true,
         backgroundColor: Colors.deepPurple,
       ),
@@ -54,6 +55,7 @@ class ChallengePage extends StatelessWidget {
             _buildBanner(context),
             // const SizedBox(height: 12),
             const GameList(),
+            const SizedBox(height: 12),
           ],
         ),
       ),
@@ -78,6 +80,12 @@ class GameList extends StatelessWidget {
         'description': 'Challenge and reframe negative thoughts into positive ones.',
         'lottieAsset': 'assets/animations/mini_game2.json',
         'widget': const ThoughtReframeGame(), 
+      },
+      {
+        'title': 'Word Web',
+        'description': 'Discover how thoughts are interconnected to our mood and behavior.',
+        'lottieAsset': 'assets/animations/mini_game3.json',
+        'widget': const WordWebGame(), 
       },
     ];
 
@@ -123,14 +131,12 @@ class GameCard extends StatelessWidget {
           padding: const EdgeInsets.all(12.0),
           child: Row(
             children: [
-              // Lottie animation as a more prominent element
               Lottie.asset(
                 lottieAsset,
-                width: 100, // Making the animation larger
+                width: 100, 
                 fit: BoxFit.cover,
               ),
               const SizedBox(width: 16),
-              // Expanding the text section to fill the available space
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
