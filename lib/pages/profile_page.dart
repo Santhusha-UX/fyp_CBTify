@@ -195,8 +195,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
             const SizedBox(height: 20),
             _buildAchievementGallery(achievements),
             const SizedBox(height: 20),
-            Divider(color: Colors.deepPurple.withOpacity(0.5)),
-            const SizedBox(height: 20),
           ],
         ),
       ),
