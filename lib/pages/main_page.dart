@@ -108,7 +108,7 @@ class _MainScreenState extends State<MainScreen> {
     const HomeScreen(),
     const ChallengePage(),
     JournalPage(),
-    const ProfilePage(),
+    const UserProfileScreen(),
   ];
 
   void _onItemSelected(int index) {
