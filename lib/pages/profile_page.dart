@@ -1,5 +1,9 @@
+// ignore_for_file: library_private_types_in_public_api, deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+
+import 'auth_screen.dart';
 
 class User {
   String username;
@@ -24,7 +28,7 @@ class Achievement {
 }
 
 class UserProfileScreen extends StatefulWidget {
-  const UserProfileScreen({Key? key}) : super(key: key);
+  const UserProfileScreen({super.key});
 
   @override
   _UserProfileScreenState createState() => _UserProfileScreenState();
@@ -115,7 +119,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
           child: ListBody(
             children: <Widget>[
               Lottie.asset(achievement.lottieAsset, repeat: false, frameRate: FrameRate.max),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Text(achievement.description,
               textAlign: TextAlign.center,),
             ],
@@ -123,7 +127,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
         ),
         actions: <Widget>[
           TextButton(
-            child: Text('Close'),
+            child: const Text('Close'),
             onPressed: () => Navigator.of(context).pop(),
           ),
         ],
@@ -195,6 +199,10 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
             const SizedBox(height: 20),
             _buildAchievementGallery(achievements),
             const SizedBox(height: 20),
+            Divider(color: Colors.deepPurple.withOpacity(0.5)),
+            const SizedBox(height: 20),
+             _buildSignOutButton(),
+            const SizedBox(height: 20),
           ],
         ),
       ),
@@ -224,12 +232,12 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
             GestureDetector(
               onTap: _showAvatarSelectionDialog,
               child: Container(
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   color: Colors.deepPurpleAccent,
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.edit, color: Colors.white, size: 24),
                 padding: const EdgeInsets.all(8),
+                child: const Icon(Icons.edit, color: Colors.white, size: 24),
               ),
             ),
           ],
@@ -248,11 +256,11 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: EdgeInsets.symmetric(horizontal: 8), 
-          child: Text('Achievements ($unlockedCount/${achievements.length})', style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)),
+          padding: const EdgeInsets.symmetric(horizontal: 8), 
+          child: Text('Achievements ($unlockedCount/${achievements.length})', style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)),
         ),
         const SizedBox(height: 10),
-        Padding(
+        const Padding(
           padding: EdgeInsets.symmetric(horizontal: 8), 
           child: Text("Each achievement marks a step forward in mastering your wellness and mental health. Unlock them by engaging with daily tasks, challenges, and personal growth activities.",
           style: TextStyle(color: Colors.white38, fontSize: 14, fontStyle: FontStyle.italic),
@@ -280,11 +288,11 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                         left: 0,
                         right: 0,
                         child: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 8), // Apply padding horizontally or vertically only
+                          padding: const EdgeInsets.symmetric(horizontal: 8), // Apply padding horizontally or vertically only
                           child: Text(
                             achievement.title,
                             textAlign: TextAlign.center,
-                            style: TextStyle(fontSize: 14, color: Colors.white),
+                            style: const TextStyle(fontSize: 14, color: Colors.white),
                           ),
                         ),
                       ),
@@ -307,6 +315,26 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       ),
       alignment: Alignment.center,
       child: const Icon(Icons.lock, color: Colors.white, size: 24),
+    );
+  }
+
+  Widget _buildSignOutButton() {
+    return ElevatedButton(
+      onPressed: _signOut,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.redAccent,
+        foregroundColor: Colors.white,
+      ),
+      child: const Text('Sign Out'),
+    );
+  }
+
+  void _signOut() {
+    // Here you would clear any saved authentication or user data.
+    // For demonstration, navigate back to the AuthScreen and clear the navigation stack.
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (context) => const AuthScreen()),
+      (Route<dynamic> route) => false,
     );
   }
 }

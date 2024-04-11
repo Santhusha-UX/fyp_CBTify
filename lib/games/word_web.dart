@@ -1,8 +1,10 @@
+// ignore_for_file: prefer_collection_literals, library_private_types_in_public_api
+
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 
 class WordWebGame extends StatefulWidget {
-  const WordWebGame({Key? key}) : super(key: key);
+  const WordWebGame({super.key});
 
   @override
   _WordWebGameState createState() => _WordWebGameState();
@@ -148,12 +150,12 @@ class _WordWebGameState extends State<WordWebGame> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("🎉 Congratulations! 🎉"),
-          content: Text(
+          title: const Text("🎉 Congratulations! 🎉"),
+          content: const Text(
               "You've explored different perspectives on your thoughts and feelings. Continue practicing these strategies to maintain a healthy mindset."),
           actions: <Widget>[
             TextButton(
-              child: Text("Start Over"),
+              child: const Text("Start Over"),
               onPressed: () {
                 Navigator.of(context).pop();
                 setState(() {
@@ -173,7 +175,7 @@ class _WordWebGameState extends State<WordWebGame> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Word Web: Understanding Your Thoughts'),
+        title: const Text('Word Web: Understanding Your Thoughts'),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -241,7 +243,7 @@ class _WordWebGameState extends State<WordWebGame> {
                         padding: const EdgeInsets.symmetric(vertical: 20.0),
                         child: Text(
                           levels[currentLevel]['description'],
-                          style: TextStyle(
+                          style: const TextStyle(
                               color: Colors.white54,
                               fontSize: 14,
                               fontStyle: FontStyle.italic),
@@ -259,17 +261,17 @@ class _WordWebGameState extends State<WordWebGame> {
                             selected: selectedOptions.contains(option),
                             onSelected: (selected) => selectOption(option),
                             selectedColor: Colors.deepPurpleAccent,
-                            labelStyle: TextStyle(color: Colors.white),
+                            labelStyle: const TextStyle(color: Colors.white),
                           );
                         }).toList(),
                       ),
                       if (feedbackMessage.isNotEmpty) ...[
                         Container(
-                          padding: EdgeInsets.all(16),
-                          margin: EdgeInsets.only(top: 6),
+                          padding: const EdgeInsets.all(16),
+                          margin: const EdgeInsets.only(top: 6),
                           child: Text(
                             feedbackMessage,
-                            style: TextStyle(fontSize: 14, color: Colors.white),
+                            style: const TextStyle(fontSize: 14, color: Colors.white),
                             textAlign: TextAlign.center,
                           ),
                         )
@@ -277,16 +279,16 @@ class _WordWebGameState extends State<WordWebGame> {
                       const SizedBox(height: 6),
                       ElevatedButton(
                         onPressed: proceedToNextLevel,
-                        child: Text(currentLevel < levels.length - 1
-                            ? 'Next Level'
-                            : 'Finish'),
                         style: ElevatedButton.styleFrom(
                           foregroundColor: Colors.white,
                           backgroundColor: Colors.deepPurple,
-                          padding: EdgeInsets.symmetric(
+                          padding: const EdgeInsets.symmetric(
                               horizontal: 30, vertical: 10),
-                          textStyle: TextStyle(fontSize: 18),
+                          textStyle: const TextStyle(fontSize: 18),
                         ),
+                        child: Text(currentLevel < levels.length - 1
+                            ? 'Next Level'
+                            : 'Finish'),
                       ),
                     ],
                   ),
